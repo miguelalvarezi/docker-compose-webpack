@@ -1,0 +1,30 @@
+version: '2'
+services:
+    data:
+        build: dockerfiles/data
+        volumes:
+            - ./src:/var/www/html
+
+    node:  
+        build: dockerfiles/node
+        volumes_from:
+            - data
+        working_dir: /var/www/html
+
+    npm:  
+        build: dockerfiles/node
+        volumes_from:
+            - data
+        working_dir: /var/www/html
+        entrypoint: ["npm"]
+        command: "default"
+
+    web:  
+        build: dockerfiles/node
+        volumes_from:
+            - data
+        working_dir: /var/www/html
+        entrypoint: ["node_modules/.bin/webpack-dev-server"]
+        command: "--content-base public-html --inline --devtool --host 0.0.0.0"
+        ports:
+            - "8080:8080"
